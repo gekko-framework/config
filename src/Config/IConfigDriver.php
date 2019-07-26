@@ -11,4 +11,5 @@ interface IConfigDriver
 {
     function has(string $name) : bool;
     function get(string $name);
+    function getKeys() : array;
 }

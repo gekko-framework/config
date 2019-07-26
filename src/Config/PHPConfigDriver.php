@@ -26,6 +26,9 @@ class PHPConfigDriver implements IConfigDriver
 
     function has(string $name) : bool
     {
+        if (\array_key_exists($name, $this->config))
+            return true;
+
         $tmp = $this->config;
 
         $paths = explode(".", $name);
@@ -42,6 +45,9 @@ class PHPConfigDriver implements IConfigDriver
 
     function get(string $name)
     {
+        if (\array_key_exists($name, $this->config))
+            return $this->config[$name];
+
         $tmp = $this->config;
 
         $paths = explode(".", $name);
@@ -50,5 +56,10 @@ class PHPConfigDriver implements IConfigDriver
             $tmp = $tmp[$path];
 
         return $tmp;
+    }
+
+    function getKeys() : array
+    {
+        return \array_keys($this->config);
     }
 }
