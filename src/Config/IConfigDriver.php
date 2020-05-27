@@ -9,7 +9,8 @@ namespace Gekko\Config;
 
 interface IConfigDriver
 {
-    function has(string $name) : bool;
-    function get(string $name);
-    function getKeys() : array;
+    /**
+     * Load the {@see \Gekko\Config\IConfigSection} object for the provided section
+     */
+    function loadConfigurationSection(string $sectionName) : IConfigSection;
 }

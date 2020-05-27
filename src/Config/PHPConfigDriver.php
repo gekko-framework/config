@@ -9,57 +9,31 @@ namespace Gekko\Config;
 
 class PHPConfigDriver implements IConfigDriver
 {
-    private $config;
+    private $paths;
 
-    public function __construct(string $configName, array $paths)
+    /**
+     * @param array $paths Array with all the directories that may contain a configuration section
+     */
+    public function __construct(array $paths)
     {
-        $this->config = [];
-        foreach ($paths as $path) {
-            $file = $path . $configName . ".php";
+        $this->paths = $paths;
+    }
+
+    /**
+     * @see \Gekko\Config\IConfigDriver
+     */
+    function loadConfigurationSection(string $sectionName) : IConfigSection
+    {
+        $config = [];
+        foreach ($this->paths as $path) {
+            $file = $path . $sectionName . ".php";
 
             if (!\file_exists($file))
                 continue;
 
-            $this->config = \array_replace_recursive($this->config, require $file);
-        }
-    }
-
-    function has(string $name) : bool
-    {
-        if (\array_key_exists($name, $this->config))
-            return true;
-
-        $tmp = $this->config;
-
-        $paths = explode(".", $name);
-        
-        foreach ($paths as $path)
-        {
-            if (!isset($tmp[$path]))
-                return false;
-            $tmp = $tmp[$path];
+            $config = \array_replace_recursive($config, require $file);
         }
 
-        return true;
-    }
-
-    function get(string $name)
-    {
-        if (\array_key_exists($name, $this->config))
-            return $this->config[$name];
-
-        $tmp = $this->config;
-
-        $paths = explode(".", $name);
-        
-        foreach ($paths as $path)
-            $tmp = $tmp[$path];
-
-        return $tmp;
-    }
-
-    function getKeys() : array
-    {
-        return \array_keys($this->config);
+        return new ConfigSection($config);
     }
 }
